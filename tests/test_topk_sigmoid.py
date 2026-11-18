@@ -4,10 +4,18 @@ import torch
 
 from tests.utils import get_stream
 
-
 if not hasattr(infini.ops, "TopkSigmoid"):
     pytest.skip(
         "`TopkSigmoid` is not available on this platform",
+        allow_module_level=True,
+    )
+
+if not any(
+    infini.ops.TopkSigmoid.active_implementation_indices(device)
+    for device in ("cuda", "kunlun")
+):
+    pytest.skip(
+        "`TopkSigmoid` has no active implementation on the selected devices",
         allow_module_level=True,
     )
 

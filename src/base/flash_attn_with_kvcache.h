@@ -109,48 +109,40 @@ class FlashAttnWithKvcache : public Operator<FlashAttnWithKvcache> {
         rotary_cos.has_value() != rotary_sin.has_value() ||
         return_softmax_lse != softmax_lse.has_value() ||
         window_size.size() != 2 || window_size[0] < -1 || window_size[1] < -1 ||
-        !(softcap >= 0.0) || num_splits < 0)
-      return false;
+        !(softcap >= 0.0) || num_splits < 0) return false;
     if (k &&
         ((!(k->shape() == v->shape()) ||
           !(k_cache.shape() == v_cache.shape())) ||
          k->size(0) != q.size(0) || k->size(2) != k_cache.size(2) ||
          k->size(3) != q.size(3) || k->dtype() != q.dtype() ||
-         v->dtype() != q.dtype() || k->stride(-1) != 1 || v->stride(-1) != 1))
-      return false;
+         v->dtype() != q.dtype() || k->stride(-1) != 1 || v->stride(-1) != 1)) return false;
     if (rotary_cos &&
         (!k || rotary_cos->ndim() != 2 ||
          rotary_cos->shape() != rotary_sin->shape() ||
          rotary_cos->dtype() != q.dtype() || rotary_sin->dtype() != q.dtype() ||
          rotary_cos->size(1) == 0 || rotary_cos->size(1) > q.size(3) / 2 ||
-         rotary_cos->size(1) % 8 != 0))
-      return false;
+         rotary_cos->size(1) % 8 != 0)) return false;
     const auto index_vector = [&](const std::optional<Tensor>& tensor) {
       return !tensor ||
              (tensor->ndim() == 1 && tensor->size(0) == q.size(0) &&
               tensor->dtype() == DataType::kInt32 && tensor->IsContiguous());
     };
     if (!index_vector(lengths) || !index_vector(cache_batch_idx) ||
-        !index_vector(cache_leftpad))
-      return false;
+        !index_vector(cache_leftpad)) return false;
     if (block_table) {
       if (block_table->ndim() != 2 || block_table->size(0) != q.size(0) ||
           block_table->dtype() != DataType::kInt32 ||
-          !block_table->IsContiguous() || k_cache.size(1) % 256 != 0)
-        return false;
-    } else if (!cache_batch_idx && k_cache.size(0) < q.size(0))
-      return false;
+          !block_table->IsContiguous() || k_cache.size(1) % 256 != 0) return false;
+    } else if (!cache_batch_idx && k_cache.size(0) < q.size(0)) return false;
     if (alibi_slopes &&
         (alibi_slopes->dtype() != DataType::kFloat32 ||
          !alibi_slopes->IsContiguous() ||
          !((alibi_slopes->ndim() == 1 && alibi_slopes->size(0) == q.size(2)) ||
            (alibi_slopes->ndim() == 2 && alibi_slopes->size(0) == q.size(0) &&
-            alibi_slopes->size(1) == q.size(2)))))
-      return false;
+            alibi_slopes->size(1) == q.size(2))))) return false;
     if (softmax_lse && (softmax_lse->dtype() != DataType::kFloat32 ||
                         softmax_lse->shape() !=
-                            Tensor::Shape{q.size(0), q.size(2), q.size(1)}))
-      return false;
+                            Tensor::Shape{q.size(0), q.size(2), q.size(1)})) return false;
     (void)softmax_scale;
     (void)causal;
     (void)rotary_interleaved;

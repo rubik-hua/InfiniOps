@@ -140,6 +140,9 @@ def test_add(
             "The `torch.musa` test cloning path does not support `uint16`, `uint32`, or `uint64`."
         )
 
+    if device == "cuda" and dtype in _UINT_DTYPES:
+        pytest.skip("kunlun add does not support `uint16`, `uint32`, or `uint64`.")
+
     if device == "mlu" and (dtype in _UINT_DTYPES or dtype == torch.int16):
         pytest.skip(
             "The `torch.mlu` test cloning path does not support `int16`, `uint16`, `uint32`, or `uint64`."

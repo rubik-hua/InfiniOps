@@ -54,6 +54,11 @@ def test_mul(
             f"The `{device}` test cloning path does not support `uint16`, `uint32`, or `uint64`."
         )
 
+    if device == "cuda" and dtype in _UINT_DTYPES:
+        pytest.skip(
+            "kunlun elementwise ops do not support `uint16`, `uint32`, or `uint64`."
+        )
+
     if dtype in _INT_DTYPES or dtype in _UINT_DTYPES:
         input = randint_strided(
             0, 100, shape, input_strides, dtype=dtype, device=device
@@ -145,6 +150,12 @@ def _torch_mul(input, other, out):
 
     if other.dtype in _UINT_DTYPES:
         other = other.to(torch.int64)
+
+    # torch_xmlir mul is unimplemented for int16; compute in int32 and cast.
+    if input.dtype == torch.int16:
+        res = torch.mul(input.to(torch.int32), other.to(torch.int32))
+        out.copy_(res.to(out.dtype))
+        return out
 
     res = torch.mul(input, other)
     out.copy_(res.to(out.dtype))

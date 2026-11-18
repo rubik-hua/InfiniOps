@@ -1,0 +1,216 @@
+{
+  "add": {
+    "implementations": [
+      0
+    ]
+  },
+  "argmax": {
+    "implementations": [
+      0
+    ]
+  },
+  "cast": {
+    "implementations": [
+      0
+    ]
+  },
+  "cat": {
+    "public_api_only": true
+  },
+  "causal_conv1d": {
+    "public_api_only": true
+  },
+  "chunk_gated_delta_rule": {
+    "public_api_only": true
+  },
+  "convolution": {
+    "public_api_only": true
+  },
+  "copy": {
+    "implementations": [
+      0
+    ]
+  },
+  "cutlass_scaled_mm": {
+    "public_api_only": true
+  },
+  "deepseek_moe": {
+    "public_api_only": true
+  },
+  "embedding": {
+    "implementations": [
+      0
+    ]
+  },
+  "fill": {
+    "implementations": [
+      0
+    ]
+  },
+  "flash_attn_varlen_func": {
+    "implementations": [
+      0
+    ]
+  },
+  "flash_attn_with_kvcache": {
+    "implementations": [
+      0
+    ]
+  },
+  "fused_add_rms_norm": {
+    "implementations": [
+      0
+    ]
+  },
+  "fused_gated_delta_net_gating": {
+    "public_api_only": true
+  },
+  "gelu": {
+    "implementations": [
+      0
+    ]
+  },
+  "gemm": {
+    "implementations": [
+      0
+    ]
+  },
+  "get_cutlass_moe_mm_data": {
+    "public_api_only": true
+  },
+  "i8_gemm": {
+    "public_api_only": true
+  },
+  "layer_norm": {
+    "public_api_only": true
+  },
+  "mamba_selective_scan": {
+    "public_api_only": true
+  },
+  "moe_align_block_size": {
+    "public_api_only": true
+  },
+  "moe_fused_dense": {
+    "public_api_only": true
+  },
+  "moe_fused_gate": {
+    "public_api_only": true
+  },
+  "mrope": {
+    "public_api_only": true
+  },
+  "mul": {
+    "implementations": [
+      0
+    ]
+  },
+  "pad": {
+    "public_api_only": true
+  },
+  "per_channel_quant_i8": {
+    "public_api_only": true
+  },
+  "per_tensor_dequant_i8": {
+    "public_api_only": true
+  },
+  "per_tensor_quant_i8": {
+    "public_api_only": true
+  },
+  "quick_gelu": {
+    "public_api_only": true
+  },
+  "recurrent_gated_delta_rule": {
+    "public_api_only": true
+  },
+  "relu": {
+    "implementations": [
+      0
+    ]
+  },
+  "reshape_and_cache_flash": {
+    "implementations": [
+      0
+    ]
+  },
+  "rms_norm": {
+    "implementations": [
+      0
+    ]
+  },
+  "rotary_embedding": {
+    "public_api_only": true
+  },
+  "row_l2_normalize": {
+    "public_api_only": true
+  },
+  "separate_table_rope": {
+    "implementations": [
+      0
+    ]
+  },
+  "sigmoid": {
+    "implementations": [
+      0
+    ]
+  },
+  "silu": {
+    "implementations": [
+      0
+    ]
+  },
+  "silu_and_mul": {
+    "implementations": [
+      0
+    ]
+  },
+  "softmax": {
+    "implementations": [
+      0
+    ]
+  },
+  "sub": {
+    "implementations": [
+      0
+    ]
+  },
+  "sum": {
+    "public_api_only": true
+  },
+  "take": {
+    "public_api_only": true
+  },
+  "top_k_top_p_sampling_from_logits": {
+    "public_api_only": true
+  },
+  "topk_sigmoid": {
+    "public_api_only": true
+  },
+  "topk_softmax": {
+    "public_api_only": true
+  },
+  "tril": {
+    "implementations": [
+      0
+    ]
+  },
+  "triu": {
+    "implementations": [
+      0
+    ]
+  },
+  "upsample_bicubic2d": {
+    "public_api_only": true
+  },
+  "upsample_bilinear2d": {
+    "public_api_only": true
+  },
+  "w4_marlin_gemm": {
+    "public_api_only": true
+  },
+  "w4_marlin_parameters": {
+    "public_api_only": true
+  },
+  "w4_marlin_repack": {
+    "public_api_only": true
+  }
+}

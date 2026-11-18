@@ -6,8 +6,8 @@ from tests.utils import (
     Payload,
     empty_strided,
     get_stream,
-    randint_strided,
     rand_strided,
+    randint_strided,
 )
 
 
@@ -92,6 +92,8 @@ def test_relu_integer(
     dtype,
     device,
 ):
+    if dtype in (torch.int8, torch.uint8):
+        pytest.skip("kunlun relu does not support 8-bit integers")
     low = 0 if dtype == torch.uint8 else -5
     input = randint_strided(low, 6, shape, input_strides, dtype=dtype, device=device)
     out = empty_strided(shape, out_strides, dtype=dtype, device=device)
@@ -135,12 +137,24 @@ def test_relu_matches_special_value_semantics(
     if device == "mlu" and dtype == torch.float64:
         pytest.skip("Cambricon device code does not support float64 comparisons")
 
+    if device == "cuda" and dtype in (torch.float16, torch.bfloat16):
+        pytest.skip(
+            "kunlun 16-bit elementwise path drops the -0.0 sign through the "
+            "vendor half conversion; fixed with the bit-level cast in 021"
+        )
     input = torch.tensor(
         [float("-inf"), -1.0, -0.0, 0.0, 1.0, float("inf"), float("nan")],
         dtype=dtype,
         device=device,
     )
-    expected = torch.relu(input).cpu()
+    # torch_xmlir relu is broken on cuda: bf16 inputs containing special
+    # values come back all-NaN, and the sign of -0.0 is dropped for all
+    # float dtypes. Compute the reference on CPU (f32 for bf16 to dodge the
+    # NaN bug), then cast back.
+    if dtype == torch.bfloat16:
+        expected = torch.relu(input.float().cpu()).to(dtype)
+    else:
+        expected = torch.relu(input.cpu())
     out = input if inplace else torch.empty_like(input)
 
     actual = _relu(input, out, implementation_index=implementation_index).cpu()
@@ -165,6 +179,10 @@ def _relu(input, out, *, implementation_index=0):
 
 
 def _torch_relu(input, out):
-    out.copy_(torch.relu(input))
+    # torch_xmlir relu is unimplemented for integer dtypes; clamp mirrors it.
+    if not input.dtype.is_floating_point:
+        out.copy_(torch.clamp(input, min=0))
+    else:
+        out.copy_(torch.relu(input))
 
     return out

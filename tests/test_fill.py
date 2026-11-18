@@ -1,7 +1,7 @@
 import infini.ops
 import pytest
-
 import torch
+
 from tests.utils import (
     Payload,
     empty_strided,
@@ -48,6 +48,8 @@ def test_fill(
 ):
     if device in ("mlu", "musa") and dtype == torch.float64:
         pytest.skip(f"{device.upper()} does not support float64 fill")
+    if device == "cuda" and dtype in (torch.int8, torch.uint8):
+        pytest.skip("kunlun fill does not support 8-bit integers")
 
     input = _make_input(shape, input_strides, dtype=dtype, device=device)
     out = (

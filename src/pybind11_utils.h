@@ -204,6 +204,7 @@ inline std::optional<Device::Type> TryDeviceTypeFromString(
       {"iluvatar", Device::Type::kIluvatar},
       {"hygon", Device::Type::kHygon},
       {"thead", Device::Type::kThead},
+      {"kunlun", Device::Type::kKunlun},
   };
 
   auto platform_it{
@@ -279,6 +280,7 @@ inline std::optional<Tensor> OptionalTensorFromPybind11Handle(
     const std::optional<py::object>& obj) {
   [[maybe_unused]] HostRangeScope host_range_tensor_conversion{
       HostRangeLayer::kTensorConversion};
+    
   if (!obj.has_value() || obj->is_none()) return std::nullopt;
   return detail::TensorFromPybind11HandleImpl(*obj);
 }

@@ -82,7 +82,7 @@ def randint_strided(low, high, shape, strides, *, dtype=None, device=None):
     try:
         flat.random_(low, high)
     except RuntimeError as exc:
-        if "random_" not in str(exc) or "not implemented" not in str(exc):
+        if "random_" not in str(exc) and "NOT IMPLEMENTED" not in str(exc):
             raise
 
         values = torch.randint(low, high, flat.shape, dtype=torch.int64).to(

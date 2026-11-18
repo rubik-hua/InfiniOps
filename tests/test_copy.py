@@ -57,7 +57,12 @@ def _copy(input, non_blocking, out):
 
 
 def _torch_copy(input, non_blocking, out):
-    out.copy_(input, non_blocking=non_blocking)
+    # torch_xmlir copy_ with an implicitly broadcast source writes garbage past
+    # the first broadcast group; expand first to sidestep the platform bug.
+    try:
+        out.copy_(input.expand(out.shape), non_blocking=non_blocking)
+    except RuntimeError:
+        out.copy_(input, non_blocking=non_blocking)
 
     return out
 

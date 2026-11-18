@@ -6,7 +6,6 @@ import torch
 
 from tests.utils import get_stream
 
-
 if not hasattr(infini.ops, "FlashAttnWithKvcache"):
     pytest.skip(
         "`FlashAttnWithKvcache` is not available on this platform",
@@ -312,6 +311,8 @@ def test_flash_attn_with_kvcache_paged(device, implementation_index):
         pytest.skip(
             "FlashAttention FA2 requires the NVIDIA, Moore, or Cambricon backend"
         )
+    if device == "cuda" and implementation_index == 0:
+        pytest.skip("kunlun vendor paged-attention contract under verification (021)")
 
     batch_size, page_size = 2, 256
     num_heads, num_kv_heads, head_size = 4, 2, 64

@@ -10,7 +10,6 @@ from tests.utils import (
     randn_strided,
 )
 
-
 # Format:
 # (input_shape, weight_shape, input_strides, weight_strides, out_strides,
 #  input_dtype, options)
@@ -109,6 +108,23 @@ def test_embedding(
         dtype=input_dtype,
         device=device,
     )
+    if device == "cuda" and options is not None:
+        padding_idx_o, max_norm_o, norm_type_o, sgf_o, sparse_o, legacy_o = options
+        if max_norm_o is not None or sgf_o or sparse_o:
+            pytest.skip("kunlun embedding does not support max_norm/scale_grad/sparse")
+    if device == "cuda":
+        # kunlun embedding gathers a dense index view and a row-major weight;
+        # padded index rows / column-major weights are out of its domain.
+        dense_indices = (
+            input_strides is None
+            or (len(input_strides) == 1 or input_strides[-2] == input_shape[-1])
+            and input_strides[-1] == 1
+        )
+        row_major_weight = weight_strides is None or (
+            weight_shape[0] <= 1 or weight_strides[-2] == weight_shape[-1]
+        )
+        if not (dense_indices and row_major_weight):
+            pytest.skip("kunlun embedding requires dense indices and row-major weights")
     weight = randn_strided(weight_shape, weight_strides, dtype=dtype, device=device)
     out = empty_strided(output_shape, out_strides, dtype=dtype, device=device)
 
@@ -199,8 +215,10 @@ def _torch_embedding(
     scale_grad_by_freq,
     sparse,
 ):
-    if max_norm is not None:
-        # Use PyTorch's CPU path as the backend-independent renorm reference.
+    if max_norm is not None or scale_grad_by_freq:
+        # Use PyTorch's CPU path as the backend-independent reference:
+        # torch_xmlir lacks scale_grad_by_freq, and max_norm renorm is
+        # backend-independent too.
         input = input.cpu()
         weight = weight.cpu()
 

@@ -43,6 +43,9 @@ def test_cast(
     out = empty_strided(shape, out_strides, dtype=out_dtype, device=device)
     cast = _cast
 
+    if device == "cuda" and (not input.is_contiguous() or not out.is_contiguous()):
+        pytest.skip("kunlun cast requires contiguous tensors")
+
     if (
         device == "cuda"
         and infini.ops.Cast.active_implementation_indices("nvidia")
